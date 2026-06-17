@@ -1,0 +1,390 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>部门纪念册</title>
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #f7f5f2;
+    --primary: #2c3e50;
+    --accent: #8b7355;
+    --gold: #c9a96e;
+    --text: #3d3d3d;
+    --text-light: #7a7a7a;
+    --card-bg: #ffffff;
+    --radius: 12px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.06);
+    --shadow-hover: 0 12px 40px rgba(0,0,0,0.10);
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+  .hero {
+    position: relative;
+    min-height: 65vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: linear-gradient(135deg, #1a2a3a 0%, #2c3e50 40%, #3a4a5a 100%);
+    overflow: hidden;
+    padding: 2rem;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 30% 50%, rgba(201,169,110,0.12) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 30%, rgba(255,255,255,0.06) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .hero-content { position: relative; z-index: 2; max-width: 800px; }
+  .hero-badge {
+    display: inline-block;
+    padding: 0.4rem 1.6rem;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    border-radius: 100px;
+    font-size: 0.85rem;
+    letter-spacing: 0.15em;
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s forwards;
+  }
+  .hero h1 {
+    font-size: clamp(2.4rem, 7vw, 4.2rem);
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.4s forwards;
+  }
+  .hero h1 .highlight { color: var(--gold); }
+  .hero-sub {
+    font-size: clamp(1rem, 2.5vw, 1.3rem);
+    color: rgba(255,255,255,0.7);
+    margin-top: 0.8rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.6s forwards;
+  }
+  @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+  .hero-content * { transform: translateY(20px); }
+  .section {
+    padding: 5rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .section-header { text-align: center; margin-bottom: 4rem; }
+  .section-header h2 {
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    font-weight: 700;
+    color: var(--primary);
+  }
+  .section-header h2::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 3px;
+    background: var(--gold);
+    margin: 1rem auto;
+    border-radius: 2px;
+  }
+  .section-header p {
+    color: var(--text-light);
+    max-width: 600px;
+    margin: 0 auto;
+    font-size: 1.05rem;
+  }
+  .photo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+  .photo-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+  }
+  .photo-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hover);
+  }
+  .photo-card-img {
+    width: 100%;
+    aspect-ratio: 16 / 11;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+  }
+  .photo-card:hover .photo-card-img { transform: scale(1.03); }
+  .photo-card-body { padding: 1.5rem; }
+  .photo-card-body h3 {
+    font-size: 1.1rem;
+    color: var(--primary);
+    margin-bottom: 0.4rem;
+  }
+  .photo-card-body .meta {
+    font-size: 0.85rem;
+    color: var(--gold);
+    margin-bottom: 0.6rem;
+  }
+  .photo-card-body p {
+    font-size: 0.92rem;
+    color: var(--text-light);
+    line-height: 1.6;
+  }
+  .photo-card .img-placeholder {
+    width: 100%;
+    aspect-ratio: 16 / 11;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+  }
+  .message-section {
+    background: linear-gradient(135deg, #2c3e50 0%, #1a2a3a 100%);
+    color: #fff;
+    padding: 5rem 2rem;
+    text-align: center;
+  }
+  .message-section .inner { max-width: 700px; margin: 0 auto; }
+  .message-section blockquote {
+    font-size: clamp(1.1rem, 3vw, 1.5rem);
+    line-height: 1.9;
+    font-weight: 300;
+    color: rgba(255,255,255,0.9);
+    position: relative;
+    padding: 2rem 0;
+  }
+  .message-section blockquote::before {
+    content: '\201C';
+    font-size: 4rem;
+    color: var(--gold);
+    position: absolute;
+    top: -1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: Georgia, serif;
+    line-height: 1;
+    opacity: 0.5;
+  }
+  .message-section .quote-author {
+    margin-top: 1.5rem;
+    color: var(--gold);
+    font-size: 0.95rem;
+    letter-spacing: 0.1em;
+  }
+  footer {
+    background: #1a2a3a;
+    color: rgba(255,255,255,0.5);
+    text-align: center;
+    padding: 2rem;
+    font-size: 0.85rem;
+  }
+  .lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    background: rgba(0,0,0,0.85);
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    cursor: pointer;
+  }
+  .lightbox.active { display: flex; }
+  .lightbox img {
+    max-width: 90vw;
+    max-height: 85vh;
+    border-radius: 8px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+    object-fit: contain;
+  }
+  .lightbox-close {
+    position: absolute;
+    top: 1.5rem;
+    right: 2rem;
+    color: #fff;
+    font-size: 2rem;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+    background: none;
+    border: none;
+    font-family: inherit;
+  }
+  .lightbox-close:hover { opacity: 1; }
+  @media (max-width: 640px) {
+    .section { padding: 3rem 1.2rem; }
+    .photo-grid { grid-template-columns: 1fr; }
+    .hero { min-height: 55vh; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero" id="top">
+  <div class="hero-content">
+    <div class="hero-badge">★ 纪念册</div>
+    <h1>我们 <span class="highlight">的部门</span></h1>
+    <p class="hero-sub">那些一起走过的日子，是岁月里最温暖的光</p>
+  </div>
+</header>
+
+<section class="section" id="gallery">
+  <div class="section-header">
+    <h2>部门留影</h2>
+    <p>每一张照片，都是我们共同的故事</p>
+  </div>
+  <div class="photo-grid" id="photoGrid"></div>
+</section>
+
+<div class="message-section">
+  <div class="inner">
+    <blockquote>
+      时光荏苒，岁月如歌。<br>
+      那些一起奋斗的日夜、一起欢笑的瞬间，<br>
+      都将成为我们心中最珍贵的记忆。
+    </blockquote>
+    <div class="quote-author">—— 致我们最好的时光</div>
+  </div>
+</div>
+
+<footer>
+  <p>部门纪念册 ～ 谨以此纪念我们共同走过的时光</p>
+</footer>
+
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightboxClose">&times;</button>
+  <img id="lightboxImg" src="" alt="放大查看">
+</div>
+
+<script>
+// ================================================================
+// ★★★ 从这里开始编辑你的照片数据 ★★★
+//
+// 在下方 photos 数组里添加或修改条目即可更新页面。
+// 每个条目的格式：
+//   {
+//     img:  '照片文件路径',    // 例如 'photos/合照.jpg'
+//     title: '照片标题',        // 例如 '部门年度合照'
+//     meta:  '日期 / 标签',     // 例如 '2025 · 年会'
+//     desc:  '照片描述文字'     // 简短介绍
+//   }
+//
+// 提示：
+//   - 照片建议放在本文件同级的 photos/ 文件夹里
+//   - 可以放任意多张，页面会自动排列
+// ================================================================
+
+const photos = [
+  {
+    img: '',
+    title: '部门合照',
+    meta: '2025 · 年度合影',
+    desc: '全体成员在年会上的合影留念，记录下这个温暖的大家庭。'
+  },
+  {
+    img: '',
+    title: '团建活动',
+    meta: '2025 · 春季',
+    desc: '春日户外团建，大家一起爬山、烧烤，度过了愉快的一天。'
+  },
+  {
+    img: '',
+    title: '工作会议',
+    meta: '2024 · 项目总结',
+    desc: '年终项目总结会上，每个人都分享了这一年的收获与成长。'
+  },
+  {
+    img: '',
+    title: '生日庆祝',
+    meta: '2024 · 季度生日会',
+    desc: '为正值生日的同事准备的惊喜派对，蛋糕与笑声一样甜。'
+  },
+  {
+    img: '',
+    title: '荣誉时刻',
+    meta: '2024 · 优秀团队奖',
+    desc: '我们部门荣获年度优秀团队奖，这一刻属于每一个人。'
+  },
+  {
+    img: '',
+    title: '日常点滴',
+    meta: '2024 · 办公日常',
+    desc: '那些一起加班、一起点奶茶、一起攻克难题的日常。'
+  }
+  // ===== 在这里继续添加更多条目 =====
+  // {
+  //   img: 'photos/新年聚餐.jpg',
+  //   title: '新年聚餐',
+  //   meta: '2025 · 元旦',
+  //   desc: '大家一起迎接新年的到来，举杯庆祝。'
+  // }
+];
+
+// ================================================================
+// 下面代码自动把照片数据渲染到页面中，一般不需要修改。
+// ================================================================
+
+const grid = document.getElementById('photoGrid');
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightboxImg');
+grid.innerHTML = '';
+
+photos.forEach((p, idx) => {
+  const card = document.createElement('div');
+  card.className = 'photo-card';
+  if (p.img) {
+    const img = document.createElement('img');
+    img.className = 'photo-card-img';
+    img.src = p.img;
+    img.alt = p.title;
+    img.loading = 'lazy';
+    img.addEventListener('click', () => {
+      lightbox.classList.add('active');
+      lightboxImg.src = p.img;
+    });
+    card.appendChild(img);
+  } else {
+    const ph = document.createElement('div');
+    ph.className = 'photo-card-img img-placeholder';
+    const hue = (idx * 50) % 360;
+    ph.style.background = 'linear-gradient(135deg, hsl(' + hue + ', 20%, 92%), hsl(' + (hue + 30) + ', 15%, 85%))';
+    ph.innerHTML = '<span style="font-size:2.4rem;opacity:0.35;">📷</span>';
+    ph.addEventListener('click', () => {
+      alert('请将照片放入对应目录，并在 photos 数组中填写正确的图片路径。');
+    });
+    card.appendChild(ph);
+  }
+  const body = document.createElement('div');
+  body.className = 'photo-card-body';
+  body.innerHTML = '<h3>' + p.title + '</h3><div class="meta">' + p.meta + '</div><p>' + p.desc + '</p>';
+  card.appendChild(body);
+  grid.appendChild(card);
+});
+
+document.getElementById('lightboxClose').addEventListener('click', () => {
+  lightbox.classList.remove('active');
+});
+lightbox.addEventListener('click', (e) => {
+  if (e.target === lightbox) lightbox.classList.remove('active');
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') lightbox.classList.remove('active');
+});
+</script>
+
+</body>
+</html>
